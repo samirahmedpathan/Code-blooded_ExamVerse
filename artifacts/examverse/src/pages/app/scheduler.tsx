@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw, Plus, Settings2 } from "lucide-react";
+import { Play, Pause, RotateCcw, Plus, Settings2, Clock } from "lucide-react";
 
 export default function Scheduler() {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
