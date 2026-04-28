@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useProgress } from "@/lib/progress";
 import { findExam, findLanguage } from "@/lib/exams";
+import { useT } from "@/lib/i18n";
 import { MOCK_DATA } from "@/lib/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -96,11 +97,12 @@ export default function Dashboard() {
   } = useProgress();
   const [, navigate] = useLocation();
   const [mentorPreview, setMentorPreview] = useState("");
+  const { t: tr } = useT();
 
   const exam = findExam(user?.targetExam);
   const lang = findLanguage(user?.language);
   const tasks = TASKS_BY_EXAM[exam.code] ?? TASKS_BY_EXAM.JEE;
-  const completedCount = tasks.filter((t) => todayCompletedTaskIds.includes(t.id)).length;
+  const completedCount = tasks.filter((task) => todayCompletedTaskIds.includes(task.id)).length;
 
   const recommendedQuiz =
     MOCK_DATA.quizzes.find(
@@ -128,13 +130,13 @@ export default function Dashboard() {
             {user?.name?.split(" ")[0]}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Let's keep building toward {exam.name}.
+            {tr("common.welcomeBack")} · {exam.name}
           </p>
         </div>
         <Link href="/app/mood">
           <Button variant="outline" className="gap-2 rounded-full">
             <Brain className="w-4 h-4" />
-            Check in your mood
+            {tr("nav.mood")}
           </Button>
         </Link>
       </div>
@@ -146,7 +148,7 @@ export default function Dashboard() {
               <Flame className="w-5 h-5 text-orange-500" />
               <div className="text-3xl font-bold text-orange-600">{streak}</div>
             </div>
-            <div className="text-sm font-medium text-muted-foreground">Day Streak</div>
+            <div className="text-sm font-medium text-muted-foreground">{tr("common.streak")}</div>
           </CardContent>
         </Card>
         <Card className="bg-primary/5 border-primary/20">
@@ -156,7 +158,7 @@ export default function Dashboard() {
               <div className="text-3xl font-bold text-primary">{state.totalCredits}</div>
             </div>
             <div className="text-sm font-medium text-muted-foreground">
-              Credits <span className="text-primary/70">(+{todayCredits} today)</span>
+              {tr("common.credits")} <span className="text-primary/70">(+{todayCredits} {tr("common.today")})</span>
             </div>
           </CardContent>
         </Card>
@@ -165,7 +167,7 @@ export default function Dashboard() {
             <div className="text-3xl font-bold text-foreground mb-1">
               {Math.floor(weeklyMinutes / 60)}h {weeklyMinutes % 60}m
             </div>
-            <div className="text-sm font-medium text-muted-foreground">Studied this week</div>
+            <div className="text-sm font-medium text-muted-foreground">{tr("common.thisWeek")}</div>
           </CardContent>
         </Card>
         <Card>
@@ -173,7 +175,7 @@ export default function Dashboard() {
             <div className={`text-3xl font-bold mb-1 ${weeklyAccuracy >= 70 ? "text-green-600" : weeklyAccuracy >= 50 ? "text-amber-600" : "text-foreground"}`}>
               {weeklyAccuracy || "—"}{weeklyAccuracy ? "%" : ""}
             </div>
-            <div className="text-sm font-medium text-muted-foreground">Weekly Accuracy</div>
+            <div className="text-sm font-medium text-muted-foreground">{tr("dashboard.weeklyAccuracy")}</div>
           </CardContent>
         </Card>
       </div>
@@ -183,9 +185,9 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center justify-between">
-                <span>Today's Plan</span>
+                <span>{tr("dashboard.todayPlan")}</span>
                 <span className="text-sm font-normal text-muted-foreground">
-                  {completedCount}/{tasks.length} done · +{completedCount * 10} credits
+                  {completedCount}/{tasks.length} · +{completedCount * 10} {tr("common.credits")}
                 </span>
               </CardTitle>
             </CardHeader>
@@ -236,9 +238,9 @@ export default function Dashboard() {
             <CardContent className="p-0">
               <div className="flex flex-col md:flex-row">
                 <div className="p-6 flex-1">
-                  <h3 className="font-semibold mb-2">Ask your AI Mentor</h3>
+                  <h3 className="font-semibold mb-2">{tr("dashboard.askMentor")}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Stuck on a concept? Need a study plan? Just ask.
+                    {tr("mentor.placeholder")}
                   </p>
                   <form className="flex gap-2" onSubmit={submitMentor}>
                     <Input
@@ -281,7 +283,7 @@ export default function Dashboard() {
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <PlayCircle className="w-5 h-5 text-primary" />
-                Recommended Quiz
+                {tr("dashboard.recommended")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -290,7 +292,7 @@ export default function Dashboard() {
                 {recommendedQuiz.subject} · {recommendedQuiz.questionCount} Qs · {recommendedQuiz.estTimeMin} min
               </p>
               <Link href={`/app/quizzes/${recommendedQuiz.id}`}>
-                <Button className="w-full shadow-sm">Start now (+25 credits)</Button>
+                <Button className="w-full shadow-sm">{tr("common.startNow")} (+25)</Button>
               </Link>
             </CardContent>
           </Card>
@@ -299,14 +301,14 @@ export default function Dashboard() {
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <Newspaper className="w-5 h-5 text-blue-500" />
-                Today in Current Affairs
+                {tr("dashboard.todaysCA")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm font-medium mb-2 line-clamp-2">{todayCa.headline}</p>
               <p className="text-xs text-muted-foreground mb-4 line-clamp-3">{todayCa.summary}</p>
               <Link href="/app/current-affairs">
-                <Button variant="outline" className="w-full">Read more</Button>
+                <Button variant="outline" className="w-full">{tr("common.read")}</Button>
               </Link>
             </CardContent>
           </Card>

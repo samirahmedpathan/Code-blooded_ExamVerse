@@ -22,28 +22,30 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth";
 import { useProgress } from "@/lib/progress";
 import { findExam, findLanguage } from "@/lib/exams";
+import { useT } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 
 const NAV_ITEMS = [
-  { href: "/app", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/app/roadmap", label: "Roadmap", icon: MapIcon },
-  { href: "/app/scheduler", label: "Scheduler", icon: Calendar },
-  { href: "/app/mood", label: "Mood", icon: Smile },
-  { href: "/app/quizzes", label: "Quizzes", icon: BookOpen },
-  { href: "/app/current-affairs", label: "Current Affairs", icon: Newspaper },
-  { href: "/app/analytics", label: "Analytics", icon: BarChart2 },
-  { href: "/app/challenges", label: "Challenges", icon: Trophy },
-  { href: "/app/resources", label: "Resources", icon: Library },
-  { href: "/app/mentor", label: "AI Mentor", icon: MessageSquare },
+  { href: "/app", labelKey: "nav.dashboard", icon: LayoutDashboard },
+  { href: "/app/roadmap", labelKey: "nav.roadmap", icon: MapIcon },
+  { href: "/app/scheduler", labelKey: "nav.scheduler", icon: Calendar },
+  { href: "/app/mood", labelKey: "nav.mood", icon: Smile },
+  { href: "/app/quizzes", labelKey: "nav.quizzes", icon: BookOpen },
+  { href: "/app/current-affairs", labelKey: "nav.currentAffairs", icon: Newspaper },
+  { href: "/app/analytics", labelKey: "nav.analytics", icon: BarChart2 },
+  { href: "/app/challenges", labelKey: "nav.challenges", icon: Trophy },
+  { href: "/app/resources", labelKey: "nav.resources", icon: Library },
+  { href: "/app/mentor", labelKey: "nav.mentor", icon: MessageSquare },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
   const { todayCredits, state, streak } = useProgress();
+  const { t } = useT();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </Link>
         {exam && (
           <div className="mt-4 rounded-lg border border-sidebar-border bg-sidebar-accent/40 p-3">
-            <p className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60 font-semibold">Studying for</p>
+            <p className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60 font-semibold">{t("common.exam")}</p>
             <p className="text-sm font-semibold text-sidebar-foreground mt-0.5 flex items-center gap-1.5">
               <span>{exam.emoji}</span> {exam.short}
             </p>
@@ -86,7 +88,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               }`}>
                 <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </div>
             </Link>
           );
@@ -95,9 +97,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       <div className="p-4 mt-auto border-t border-sidebar-border space-y-1">
         <div className="px-3 py-2 mb-2 rounded-lg bg-primary/10 border border-primary/20">
-          <p className="text-[10px] uppercase tracking-wider text-primary/80 font-semibold">Your credits</p>
+          <p className="text-[10px] uppercase tracking-wider text-primary/80 font-semibold">{t("common.credits")}</p>
           <p className="text-lg font-bold text-primary leading-tight">{state.totalCredits}</p>
-          <p className="text-[10px] text-muted-foreground">+{todayCredits} today</p>
+          <p className="text-[10px] text-muted-foreground">+{todayCredits} {t("common.today")}</p>
         </div>
         <Link href="/app/settings" onClick={() => setIsMobileMenuOpen(false)}>
           <div className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
@@ -106,7 +108,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
           }`}>
             <Settings className="w-5 h-5" />
-            <span>Settings</span>
+            <span>{t("nav.settings")}</span>
           </div>
         </Link>
         <button
@@ -117,7 +119,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive/80 hover:bg-destructive/10 hover:text-destructive transition-colors"
         >
           <LogOut className="w-5 h-5" />
-          <span>Log Out</span>
+          <span>{t("common.logout")}</span>
         </button>
       </div>
     </div>

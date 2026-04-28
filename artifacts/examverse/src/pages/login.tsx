@@ -37,6 +37,134 @@ const ROTATING_LINES = [
   { en: "your exam, conquered.", hi: "आपकी परीक्षा, जीती गई।", ta: "உங்கள் தேர்வு, வென்றது.", te: "మీ పరీక్ష, గెలిచారు.", kn: "ನಿಮ್ಮ ಪರೀಕ್ಷೆ, ಗೆಲುವು." },
 ];
 
+const LOGIN_LABELS: Record<string, {
+  exam: string;
+  lang: string;
+  cont: string;
+  newHere: string;
+  createAcct: string;
+  nameOrEmail: string;
+  password: string;
+  forgot: string;
+  logIn: string;
+  google: string;
+  noAcct: string;
+  signUp: string;
+  change: string;
+  pickHelp: string;
+  step1: string;
+  step2: string;
+}> = {
+  EN: {
+    exam: "Target exam",
+    lang: "Preferred language",
+    cont: "Continue",
+    newHere: "New to Examverse?",
+    createAcct: "Create an account",
+    nameOrEmail: "Name or Email",
+    password: "Password",
+    forgot: "Forgot Password?",
+    logIn: "Log in",
+    google: "Continue with Google",
+    noAcct: "Don't have an account?",
+    signUp: "Sign up",
+    change: "← Change exam or language",
+    pickHelp: "Pick your target exam and language — we'll tailor everything.",
+    step1: "Step 1 · Personalize",
+    step2: "Step 2 · Sign in",
+  },
+  HI: {
+    exam: "लक्षित परीक्षा",
+    lang: "पसंदीदा भाषा",
+    cont: "आगे बढ़ें",
+    newHere: "Examverse पर नए हैं?",
+    createAcct: "खाता बनाएँ",
+    nameOrEmail: "नाम या ईमेल",
+    password: "पासवर्ड",
+    forgot: "पासवर्ड भूल गए?",
+    logIn: "साइन इन",
+    google: "Google से जारी रखें",
+    noAcct: "खाता नहीं है?",
+    signUp: "साइन अप",
+    change: "← परीक्षा या भाषा बदलें",
+    pickHelp: "अपनी लक्षित परीक्षा और भाषा चुनें — हम सब कुछ अनुरूप करेंगे।",
+    step1: "चरण 1 · वैयक्तिकरण",
+    step2: "चरण 2 · साइन इन",
+  },
+  KN: {
+    exam: "ಗುರಿ ಪರೀಕ್ಷೆ",
+    lang: "ಆದ್ಯತೆಯ ಭಾಷೆ",
+    cont: "ಮುಂದುವರಿಸಿ",
+    newHere: "Examverse ಗೆ ಹೊಸದಾ?",
+    createAcct: "ಖಾತೆ ರಚಿಸಿ",
+    nameOrEmail: "ಹೆಸರು ಅಥವಾ ಇಮೇಲ್",
+    password: "ಪಾಸ್ವರ್ಡ್",
+    forgot: "ಪಾಸ್ವರ್ಡ್ ಮರೆತಿರಾ?",
+    logIn: "ಸೈನ್ ಇನ್",
+    google: "Google ನಿಂದ ಮುಂದುವರಿಸಿ",
+    noAcct: "ಖಾತೆ ಇಲ್ಲವೇ?",
+    signUp: "ಸೈನ್ ಅಪ್",
+    change: "← ಪರೀಕ್ಷೆ ಅಥವಾ ಭಾಷೆ ಬದಲಿಸಿ",
+    pickHelp: "ನಿಮ್ಮ ಗುರಿ ಪರೀಕ್ಷೆ ಮತ್ತು ಭಾಷೆ ಆರಿಸಿ — ನಾವು ಎಲ್ಲವನ್ನೂ ಹೊಂದಿಸುತ್ತೇವೆ.",
+    step1: "ಹಂತ 1 · ವ್ಯಕ್ತಿಗತಗೊಳಿಸಿ",
+    step2: "ಹಂತ 2 · ಸೈನ್ ಇನ್",
+  },
+  TA: {
+    exam: "இலக்கு தேர்வு",
+    lang: "விருப்ப மொழி",
+    cont: "தொடர்க",
+    newHere: "Examverse ல் புதிதா?",
+    createAcct: "கணக்கு உருவாக்கு",
+    nameOrEmail: "பெயர் அல்லது மின்னஞ்சல்",
+    password: "கடவுச்சொல்",
+    forgot: "கடவுச்சொல்லை மறந்தீர்களா?",
+    logIn: "உள்நுழை",
+    google: "Google உடன் தொடர்க",
+    noAcct: "கணக்கு இல்லையா?",
+    signUp: "பதிவு செய்க",
+    change: "← தேர்வு அல்லது மொழியை மாற்று",
+    pickHelp: "உங்கள் இலக்கு தேர்வையும் மொழியையும் தேர்ந்தெடுங்கள் — அனைத்தையும் வடிவமைப்போம்.",
+    step1: "படி 1 · தனிப்பயனாக்கு",
+    step2: "படி 2 · உள்நுழை",
+  },
+  TE: {
+    exam: "లక్ష్య పరీక్ష",
+    lang: "ప్రాధాన్య భాష",
+    cont: "కొనసాగించు",
+    newHere: "Examverse లో కొత్తవారా?",
+    createAcct: "ఖాతా సృష్టించండి",
+    nameOrEmail: "పేరు లేదా ఇమెయిల్",
+    password: "పాస్‌వర్డ్",
+    forgot: "పాస్‌వర్డ్ మర్చిపోయారా?",
+    logIn: "సైన్ ఇన్",
+    google: "Google తో కొనసాగించు",
+    noAcct: "ఖాతా లేదా?",
+    signUp: "సైన్ అప్",
+    change: "← పరీక్ష లేదా భాష మార్చు",
+    pickHelp: "మీ లక్ష్య పరీక్ష, భాష ఎంచుకోండి — మేము అన్నీ సర్దుబాటు చేస్తాం.",
+    step1: "దశ 1 · వ్యక్తిగతీకరించు",
+    step2: "దశ 2 · సైన్ ఇన్",
+  },
+  BN: {
+    exam: "লক্ষ্য পরীক্ষা",
+    lang: "পছন্দের ভাষা",
+    cont: "চালিয়ে যান",
+    newHere: "Examverse-এ নতুন?",
+    createAcct: "অ্যাকাউন্ট তৈরি",
+    nameOrEmail: "নাম বা ইমেল",
+    password: "পাসওয়ার্ড",
+    forgot: "পাসওয়ার্ড ভুলে গেছেন?",
+    logIn: "সাইন ইন",
+    google: "Google দিয়ে চালিয়ে যান",
+    noAcct: "অ্যাকাউন্ট নেই?",
+    signUp: "সাইন আপ",
+    change: "← পরীক্ষা বা ভাষা পরিবর্তন",
+    pickHelp: "আপনার লক্ষ্য পরীক্ষা ও ভাষা বেছে নিন — আমরা সব মানিয়ে দেব।",
+    step1: "ধাপ ১ · ব্যক্তিগতকরণ",
+    step2: "ধাপ ২ · সাইন ইন",
+  },
+};
+
 export default function Login() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -175,20 +303,30 @@ export default function Login() {
             <div className="px-7 pt-7 pb-4">
               <div className="flex items-center gap-2 mb-1">
                 <span className={`text-[11px] font-semibold uppercase tracking-wider ${step === "choose" ? "text-primary" : "text-muted-foreground"}`}>
-                  Step 1 · Personalize
+                  {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).step1}
                 </span>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
                 <span className={`text-[11px] font-semibold uppercase tracking-wider ${step === "credentials" ? "text-primary" : "text-muted-foreground"}`}>
-                  Step 2 · Sign in
+                  {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).step2}
                 </span>
               </div>
               <h2 className="text-2xl font-bold tracking-tight">
-                {step === "choose" ? "Welcome back" : "Sign in to continue"}
+                {(() => {
+                  const titles: Record<string, { choose: string; cred: string }> = {
+                    EN: { choose: "Welcome back", cred: "Sign in to continue" },
+                    HI: { choose: "वापसी पर स्वागत है", cred: "जारी रखने के लिए साइन इन करें" },
+                    KN: { choose: "ಮರಳಿ ಸ್ವಾಗತ", cred: "ಮುಂದುವರಿಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ" },
+                    TA: { choose: "மீண்டும் வரவேற்கிறோம்", cred: "தொடர உள்நுழையவும்" },
+                    TE: { choose: "తిరిగి స్వాగతం", cred: "కొనసాగించడానికి సైన్ ఇన్ చేయండి" },
+                    BN: { choose: "আবার স্বাগতম", cred: "চালিয়ে যেতে সাইন ইন করুন" },
+                  };
+                  return (titles[language] ?? titles.EN)[step === "choose" ? "choose" : "cred"];
+                })()}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
                 {step === "choose"
-                  ? "Pick your target exam and language — we'll tailor everything."
-                  : `Studying for ${EXAMS.find((e) => e.code === targetExam)?.short ?? "your exam"} in ${LANGUAGES.find((l) => l.code === language)?.native}.`}
+                  ? (LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).pickHelp
+                  : `${EXAMS.find((e) => e.code === targetExam)?.short ?? "Your exam"} · ${LANGUAGES.find((l) => l.code === language)?.native}`}
               </p>
             </div>
 
@@ -205,7 +343,7 @@ export default function Login() {
                   <div>
                     <Label className="flex items-center gap-2 mb-3 text-sm font-semibold">
                       <Target className="w-4 h-4 text-primary" />
-                      Target exam
+                      {LOGIN_LABELS[language]?.exam ?? LOGIN_LABELS.EN.exam}
                     </Label>
                     <div className="grid grid-cols-2 gap-2 max-h-[280px] overflow-y-auto pr-1">
                       {EXAMS.map((exam) => {
@@ -243,7 +381,7 @@ export default function Login() {
                   <div>
                     <Label className="flex items-center gap-2 mb-3 text-sm font-semibold">
                       <Globe2 className="w-4 h-4 text-primary" />
-                      Preferred language
+                      {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).lang}
                     </Label>
                     <div className="flex flex-wrap gap-2">
                       {LANGUAGES.map((lang) => {
@@ -274,14 +412,14 @@ export default function Login() {
                     onClick={() => setStep("credentials")}
                     className="w-full rounded-xl h-11 font-medium gap-2"
                   >
-                    Continue
+                    {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).cont}
                     <ArrowRight className="w-4 h-4" />
                   </Button>
 
                   <div className="text-center text-sm text-muted-foreground">
-                    New to Examverse?{" "}
+                    {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).newHere}{" "}
                     <Link href="/signup" className="text-primary font-medium hover:underline underline-offset-4">
-                      Create an account
+                      {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).createAcct}
                     </Link>
                   </div>
                 </motion.div>
@@ -299,12 +437,12 @@ export default function Login() {
                     onClick={() => setStep("choose")}
                     className="text-xs text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1"
                   >
-                    ← Change exam or language
+                    {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).change}
                   </button>
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="emailOrName">Name or Email</Label>
+                      <Label htmlFor="emailOrName">{(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).nameOrEmail}</Label>
                       <Input
                         id="emailOrName"
                         placeholder="student@example.com"
@@ -318,9 +456,9 @@ export default function Login() {
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="password">{(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).password}</Label>
                         <a href="#" className="text-xs text-primary font-medium hover:underline underline-offset-4">
-                          Forgot Password?
+                          {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).forgot}
                         </a>
                       </div>
                       <div className="relative">
@@ -352,7 +490,7 @@ export default function Login() {
                         disabled={isLoading}
                       >
                         {isLoading && <Loader2 className="animate-spin w-4 h-4" />}
-                        Log in
+                        {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).logIn}
                         <ArrowRight className="w-4 h-4" />
                       </Button>
                     </motion.div>
@@ -373,13 +511,13 @@ export default function Login() {
                     className="w-full rounded-xl h-11 mt-5 font-medium"
                   >
                     <FcGoogle className="mr-2 w-5 h-5" />
-                    Continue with Google
+                    {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).google}
                   </Button>
 
                   <div className="mt-6 text-center text-sm text-muted-foreground">
-                    Don't have an account?{" "}
+                    {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).noAcct}{" "}
                     <Link href="/signup" className="text-primary font-medium hover:underline underline-offset-4">
-                      Sign up
+                      {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).signUp}
                     </Link>
                   </div>
                 </motion.div>

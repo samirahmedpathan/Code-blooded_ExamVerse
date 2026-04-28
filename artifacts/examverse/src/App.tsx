@@ -10,6 +10,7 @@ import Signup from "@/pages/signup";
 
 import { AuthProvider } from "@/lib/auth";
 import { ProgressProvider } from "@/lib/progress";
+import { I18nProvider } from "@/lib/i18n";
 import { AppLayout } from "@/components/layout/app-layout";
 
 import Dashboard from "@/pages/app/dashboard";
@@ -92,10 +93,12 @@ function App() {
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <AuthProvider>
-            <ProgressProvider>
-              <Router />
-              <Toaster />
-            </ProgressProvider>
+            <I18nProvider>
+              <ProgressProvider>
+                <Router />
+                <Toaster />
+              </ProgressProvider>
+            </I18nProvider>
           </AuthProvider>
         </WouterRouter>
       </TooltipProvider>

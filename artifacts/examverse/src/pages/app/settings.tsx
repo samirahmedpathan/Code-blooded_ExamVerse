@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { useProgress } from "@/lib/progress";
 import { EXAMS, LANGUAGES } from "@/lib/exams";
+import { useT } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ export default function Settings() {
   const { user, logout, updateProfile } = useAuth();
   const { resetAll, state, todayCredits, streak } = useProgress();
   const { toast } = useToast();
+  const { t } = useT();
 
   const [name, setName] = useState(user?.name ?? "");
   const [targetExam, setTargetExam] = useState(user?.targetExam ?? "JEE");
@@ -59,23 +61,23 @@ export default function Settings() {
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
-        <p className="text-muted-foreground mt-1">Manage your account and app preferences.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("nav.settings")}</h1>
+        <p className="text-muted-foreground mt-1">{t("settings.profile")} · {t("common.language")}</p>
       </div>
 
       <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
         <CardContent className="p-5 grid grid-cols-3 gap-4 text-center">
           <div>
             <p className="text-2xl font-bold text-primary">{state.totalCredits}</p>
-            <p className="text-xs text-muted-foreground">Total credits</p>
+            <p className="text-xs text-muted-foreground">{t("common.credits")}</p>
           </div>
           <div>
             <p className="text-2xl font-bold">{todayCredits}</p>
-            <p className="text-xs text-muted-foreground">Today's credits</p>
+            <p className="text-xs text-muted-foreground">{t("common.today")}</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-orange-500">{streak}</p>
-            <p className="text-xs text-muted-foreground">Day streak</p>
+            <p className="text-xs text-muted-foreground">{t("common.streak")}</p>
           </div>
         </CardContent>
       </Card>
@@ -83,9 +85,9 @@ export default function Settings() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" /> Profile
+            <User className="w-5 h-5" /> {t("settings.profile")}
           </CardTitle>
-          <CardDescription>Update your personal details and exam targets.</CardDescription>
+          <CardDescription>{t("settings.targetExam")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
@@ -101,7 +103,7 @@ export default function Settings() {
 
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-primary" /> Target Exam
+              <Target className="w-4 h-4 text-primary" /> {t("settings.targetExam")}
             </Label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {EXAMS.map((exam) => {
@@ -141,7 +143,7 @@ export default function Settings() {
           </div>
 
           <Button onClick={handleSave} className="mt-4">
-            <Save className="w-4 h-4 mr-2" /> Save Profile
+            <Save className="w-4 h-4 mr-2" /> {t("common.save")}
           </Button>
         </CardContent>
       </Card>
@@ -156,9 +158,9 @@ export default function Settings() {
         <CardContent className="space-y-6">
           <div className="space-y-3">
             <div>
-              <Label className="text-base">Language</Label>
+              <Label className="text-base">{t("common.language")}</Label>
               <p className="text-sm text-muted-foreground">
-                Choose your preferred interface language.
+                {t("login.langHelp")}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -168,7 +170,10 @@ export default function Settings() {
                   <button
                     key={lang.code}
                     type="button"
-                    onClick={() => setLanguage(lang.code)}
+                    onClick={() => {
+                      setLanguage(lang.code);
+                      updateProfile({ language: lang.code });
+                    }}
                     className={`px-3 py-2 rounded-full border text-sm font-medium transition-all ${
                       active
                         ? "border-primary bg-primary text-primary-foreground"
@@ -226,7 +231,7 @@ export default function Settings() {
           onClick={logout}
           className="w-full sm:w-auto bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground border-destructive/20"
         >
-          <LogOut className="w-4 h-4 mr-2" /> Log Out
+          <LogOut className="w-4 h-4 mr-2" /> {t("common.logout")}
         </Button>
       </div>
     </div>
