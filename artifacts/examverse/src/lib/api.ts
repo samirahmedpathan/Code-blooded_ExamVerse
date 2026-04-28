@@ -86,6 +86,17 @@ export const authApi = {
       body: JSON.stringify(input),
     });
   },
+  google(input: { idToken: string; targetExam?: string; language?: string }) {
+    return request<AuthResponse>("/api/auth/google", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  },
+  googleConfig() {
+    return request<{ enabled: boolean; clientId: string | null }>(
+      "/api/auth/google/config",
+    );
+  },
   me() {
     return request<{ user: AuthUser }>("/api/auth/me", { auth: true });
   },

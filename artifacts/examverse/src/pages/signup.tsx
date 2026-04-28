@@ -43,7 +43,7 @@ const signupSchema = z
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function Signup() {
-  const { signup } = useAuth();
+  const { signup, loginWithGoogle } = useAuth();
   const { t } = useT();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -51,6 +51,7 @@ export default function Signup() {
   const [targetExam, setTargetExam] = useState<string>("JEE");
   const [language, setLanguage] = useState<string>("EN");
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
 
   const {
     register,
@@ -338,9 +339,31 @@ export default function Signup() {
               <Button
                 type="button"
                 variant="outline"
+                disabled={isGoogleLoading}
+                onClick={async () => {
+                  setServerError(null);
+                  setIsGoogleLoading(true);
+                  try {
+                    await loginWithGoogle({ targetExam, language });
+                  } catch (e) {
+                    const msg =
+                      e instanceof ApiError
+                        ? e.message
+                        : e instanceof Error
+                          ? e.message
+                          : "Google sign-in failed. Please try again.";
+                    setServerError(msg);
+                  } finally {
+                    setIsGoogleLoading(false);
+                  }
+                }}
                 className="w-full rounded-xl h-11 font-medium"
               >
-                <FcGoogle className="mr-2 w-5 h-5" />
+                {isGoogleLoading ? (
+                  <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+                ) : (
+                  <FcGoogle className="mr-2 w-5 h-5" />
+                )}
                 Continue with Google
               </Button>
 

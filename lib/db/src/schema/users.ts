@@ -14,7 +14,9 @@ export const usersTable = pgTable(
     name: text("name").notNull(),
     email: text("email").notNull(),
     emailLower: text("email_lower").notNull(),
-    passwordHash: text("password_hash").notNull(),
+    passwordHash: text("password_hash"),
+    googleId: text("google_id"),
+    avatarUrl: text("avatar_url"),
     targetExam: text("target_exam").notNull().default("JEE"),
     language: text("language").notNull().default("EN"),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -24,7 +26,10 @@ export const usersTable = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (t) => [uniqueIndex("users_email_lower_idx").on(t.emailLower)],
+  (t) => [
+    uniqueIndex("users_email_lower_idx").on(t.emailLower),
+    uniqueIndex("users_google_id_idx").on(t.googleId),
+  ],
 );
 
 export const passwordResetsTable = pgTable(

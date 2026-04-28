@@ -1,6 +1,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { z } from "zod";
 import { eq, and, gt, isNull } from "drizzle-orm";
+import { OAuth2Client } from "google-auth-library";
 import { db, usersTable, passwordResetsTable } from "@workspace/db";
 import {
   hashPassword,
@@ -11,6 +12,11 @@ import {
   requireAuth,
   type AuthedRequest,
 } from "../lib/auth";
+
+const googleClientId = process.env["GOOGLE_CLIENT_ID"];
+const googleClient = googleClientId
+  ? new OAuth2Client(googleClientId)
+  : null;
 
 const router: IRouter = Router();
 
@@ -34,6 +40,12 @@ const forgotSchema = z.object({
 const resetSchema = z.object({
   token: z.string().min(20).max(200),
   password: z.string().min(8).max(128),
+});
+
+const googleSchema = z.object({
+  idToken: z.string().min(20).max(4096),
+  targetExam: z.string().min(1).max(20).optional(),
+  language: z.string().min(1).max(10).optional(),
 });
 
 function publicUser(u: typeof usersTable.$inferSelect) {
@@ -104,10 +116,108 @@ router.post("/auth/login", async (req: Request, res: Response) => {
     return;
   }
 
+  if (!user.passwordHash) {
+    res.status(401).json({
+      error: "This account uses Google sign-in. Please continue with Google.",
+    });
+    return;
+  }
+
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) {
     res.status(401).json({ error: "Invalid username or password." });
     return;
+  }
+
+  const token = signToken({ sub: user.id, email: user.email });
+  res.json({ token, user: publicUser(user) });
+});
+
+router.get("/auth/google/config", async (_req: Request, res: Response) => {
+  res.json({
+    enabled: Boolean(googleClientId),
+    clientId: googleClientId ?? null,
+  });
+});
+
+router.post("/auth/google", async (req: Request, res: Response) => {
+  if (!googleClient || !googleClientId) {
+    res.status(503).json({
+      error:
+        "Google sign-in is not configured on the server. Please add GOOGLE_CLIENT_ID and try again.",
+    });
+    return;
+  }
+
+  const parsed = googleSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid Google credential." });
+    return;
+  }
+
+  let payload: Awaited<ReturnType<OAuth2Client["verifyIdToken"]>>["payload"];
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: parsed.data.idToken,
+      audience: googleClientId,
+    });
+    payload = ticket.getPayload();
+  } catch {
+    res.status(401).json({ error: "Could not verify Google credential. Please try again." });
+    return;
+  }
+
+  if (!payload || !payload.email || !payload.sub || payload.email_verified === false) {
+    res.status(401).json({ error: "Google account email is not verified." });
+    return;
+  }
+
+  const email = payload.email;
+  const emailLower = email.trim().toLowerCase();
+  const googleId = payload.sub;
+  const name =
+    payload.name?.trim() || (payload.given_name ?? email.split("@")[0] ?? "Student");
+  const avatarUrl = payload.picture ?? null;
+
+  let [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.googleId, googleId))
+    .limit(1);
+
+  if (!user) {
+    [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.emailLower, emailLower))
+      .limit(1);
+    if (user) {
+      [user] = await db
+        .update(usersTable)
+        .set({
+          googleId,
+          avatarUrl: avatarUrl ?? user.avatarUrl,
+          updatedAt: new Date(),
+        })
+        .where(eq(usersTable.id, user.id))
+        .returning();
+    }
+  }
+
+  if (!user) {
+    [user] = await db
+      .insert(usersTable)
+      .values({
+        name,
+        email,
+        emailLower,
+        googleId,
+        avatarUrl,
+        passwordHash: null,
+        targetExam: parsed.data.targetExam ?? "JEE",
+        language: parsed.data.language ?? "EN",
+      })
+      .returning();
   }
 
   const token = signToken({ sub: user.id, email: user.email });

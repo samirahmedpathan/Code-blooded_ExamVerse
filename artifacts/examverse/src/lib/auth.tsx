@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { authApi, getToken, setToken, type AuthUser, ApiError } from "./api";
+import { promptGoogleSignIn } from "./google-signin";
 
 interface SignupInput {
   name: string;
@@ -22,6 +23,10 @@ interface AuthContextType {
   loading: boolean;
   login: (input: LoginInput) => Promise<void>;
   signup: (input: SignupInput) => Promise<void>;
+  loginWithGoogle: (input?: {
+    targetExam?: string;
+    language?: string;
+  }) => Promise<void>;
   updateProfile: (updates: Partial<AuthUser>) => void;
   logout: () => void;
 }
@@ -108,6 +113,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLocation("/app");
   };
 
+  const loginWithGoogle = async (
+    input: { targetExam?: string; language?: string } = {},
+  ) => {
+    const cfg = await authApi.googleConfig();
+    if (!cfg.enabled || !cfg.clientId) {
+      throw new Error(
+        "Google sign-in is not configured yet. Ask the admin to add the Google Client ID.",
+      );
+    }
+    const idToken = await promptGoogleSignIn(cfg.clientId);
+    const res = await authApi.google({
+      idToken,
+      targetExam: input.targetExam,
+      language: input.language,
+    });
+    persist(res.user, res.token);
+    setLocation("/app");
+  };
+
   const updateProfile = (updates: Partial<AuthUser>) => {
     setUser((prev) => {
       if (!prev) return prev;
@@ -135,7 +159,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, signup, updateProfile, logout }}
+      value={{ user, loading, login, signup, loginWithGoogle, updateProfile, logout }}
     >
       {children}
     </AuthContext.Provider>

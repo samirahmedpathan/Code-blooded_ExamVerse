@@ -188,7 +188,7 @@ const LOGIN_LABELS: Record<string, {
 };
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"choose" | "credentials">("choose");
@@ -198,6 +198,7 @@ export default function Login() {
   const [remember, setRemember] = useState<boolean>(true);
   const [hasRemembered, setHasRemembered] = useState<boolean>(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const t = setInterval(() => setTickIdx((i) => (i + 1) % ROTATING_LINES.length), 2200);
@@ -608,9 +609,31 @@ export default function Login() {
                   <Button
                     type="button"
                     variant="outline"
+                    disabled={isGoogleLoading}
+                    onClick={async () => {
+                      setServerError(null);
+                      setIsGoogleLoading(true);
+                      try {
+                        await loginWithGoogle({ targetExam, language });
+                      } catch (e) {
+                        const msg =
+                          e instanceof ApiError
+                            ? e.message
+                            : e instanceof Error
+                              ? e.message
+                              : "Google sign-in failed. Please try again.";
+                        setServerError(msg);
+                      } finally {
+                        setIsGoogleLoading(false);
+                      }
+                    }}
                     className="w-full rounded-xl h-11 mt-5 font-medium"
                   >
-                    <FcGoogle className="mr-2 w-5 h-5" />
+                    {isGoogleLoading ? (
+                      <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+                    ) : (
+                      <FcGoogle className="mr-2 w-5 h-5" />
+                    )}
                     {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).google}
                   </Button>
 

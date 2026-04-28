@@ -78,40 +78,40 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 145 30% 97%;
-  --foreground: 150 35% 15%;
-  --border: 145 20% 88%;
+  --background: 0 0% 100%;
+  --foreground: 240 25% 12%;
+  --border: 240 12% 90%;
   --card: 0 0% 100%;
-  --card-foreground: 150 35% 15%;
-  --card-border: 145 20% 88%;
-  --sidebar: 145 30% 97%;
-  --sidebar-foreground: 150 35% 15%;
-  --sidebar-border: 145 20% 88%;
-  --sidebar-primary: 145 35% 28%;
+  --card-foreground: 240 25% 12%;
+  --card-border: 240 12% 90%;
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 240 25% 12%;
+  --sidebar-border: 240 12% 90%;
+  --sidebar-primary: 250 84% 60%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 145 20% 92%;
-  --sidebar-accent-foreground: 150 35% 15%;
-  --sidebar-ring: 145 35% 28%;
+  --sidebar-accent: 250 70% 96%;
+  --sidebar-accent-foreground: 250 60% 30%;
+  --sidebar-ring: 250 84% 60%;
   --popover: 0 0% 100%;
-  --popover-foreground: 150 35% 15%;
-  --popover-border: 145 20% 88%;
-  --primary: 145 40% 25%;
+  --popover-foreground: 240 25% 12%;
+  --popover-border: 240 12% 90%;
+  --primary: 250 84% 60%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 145 20% 92%;
-  --secondary-foreground: 150 35% 15%;
-  --muted: 145 20% 92%;
-  --muted-foreground: 150 15% 45%;
-  --accent: 145 20% 92%;
-  --accent-foreground: 150 35% 15%;
-  --destructive: 0 70% 50%;
+  --secondary: 250 70% 96%;
+  --secondary-foreground: 250 60% 28%;
+  --muted: 240 10% 96%;
+  --muted-foreground: 240 8% 46%;
+  --accent: 188 90% 92%;
+  --accent-foreground: 198 90% 24%;
+  --destructive: 0 80% 58%;
   --destructive-foreground: 0 0% 100%;
-  --input: 145 20% 85%;
-  --ring: 145 35% 28%;
-  --chart-1: 145 35% 28%;
-  --chart-2: 150 30% 40%;
-  --chart-3: 160 25% 55%;
-  --chart-4: 130 35% 65%;
-  --chart-5: 140 45% 75%;
+  --input: 240 12% 90%;
+  --ring: 250 84% 60%;
+  --chart-1: 250 84% 60%;
+  --chart-2: 198 90% 50%;
+  --chart-3: 168 76% 42%;
+  --chart-4: 35 95% 58%;
+  --chart-5: 330 82% 60%;
 
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: Georgia, serif;
@@ -222,16 +222,14 @@
 
   body {
     @apply font-sans antialiased text-foreground;
-    background-color: hsl(var(--background));
-    /* Premium "study" gradient: deep navy → royal blue → emerald, with a soft warm gold glow.
-       Layered radial gradients on a fixed background for a calm, premium learning atmosphere. */
+    background-color: #ffffff;
+    /* Soft, airy gradients on a pure-white base. Subtle indigo / cyan / pink
+       glows for depth without overwhelming the page. */
     background-image:
-      radial-gradient(at 12% 8%, hsla(218, 72%, 28%, 0.18) 0px, transparent 55%),
-      radial-gradient(at 88% 10%, hsla(165, 65%, 38%, 0.16) 0px, transparent 55%),
-      radial-gradient(at 50% 92%, hsla(218, 70%, 32%, 0.15) 0px, transparent 60%),
-      radial-gradient(at 78% 70%, hsla(45, 92%, 72%, 0.16) 0px, transparent 50%),
-      radial-gradient(at 18% 78%, hsla(168, 70%, 60%, 0.14) 0px, transparent 55%),
-      linear-gradient(180deg, hsla(210, 40%, 99%, 1) 0%, hsla(168, 30%, 97%, 1) 60%, hsla(218, 35%, 97%, 1) 100%);
+      radial-gradient(at 8% 6%, hsla(250, 95%, 78%, 0.14) 0px, transparent 55%),
+      radial-gradient(at 92% 8%, hsla(195, 95%, 70%, 0.14) 0px, transparent 55%),
+      radial-gradient(at 50% 100%, hsla(330, 90%, 78%, 0.10) 0px, transparent 60%),
+      radial-gradient(at 80% 70%, hsla(168, 80%, 70%, 0.10) 0px, transparent 55%);
     background-attachment: fixed;
   }
 
