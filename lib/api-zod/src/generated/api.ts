@@ -14,3 +14,21 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * @summary Send a chat message to the AI mentor and get a reply
+ */
+export const MentorChatBody = zod.object({
+  messages: zod.array(
+    zod.object({
+      role: zod.enum(["user", "assistant"]),
+      content: zod.string(),
+    }),
+  ),
+  examTarget: zod.string().optional(),
+  studentName: zod.string().optional(),
+});
+
+export const MentorChatResponse = zod.object({
+  reply: zod.string(),
+});

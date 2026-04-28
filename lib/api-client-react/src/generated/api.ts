@@ -5,18 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  HealthStatus,
+  MentorChatRequest,
+  MentorError,
+  MentorReply,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +107,89 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Send a chat message to the AI mentor and get a reply
+ */
+export const getMentorChatUrl = () => {
+  return `/api/mentor/chat`;
+};
+
+export const mentorChat = async (
+  mentorChatRequest: MentorChatRequest,
+  options?: RequestInit,
+): Promise<MentorReply> => {
+  return customFetch<MentorReply>(getMentorChatUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(mentorChatRequest),
+  });
+};
+
+export const getMentorChatMutationOptions = <
+  TError = ErrorType<MentorError>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof mentorChat>>,
+    TError,
+    { data: BodyType<MentorChatRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof mentorChat>>,
+  TError,
+  { data: BodyType<MentorChatRequest> },
+  TContext
+> => {
+  const mutationKey = ["mentorChat"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof mentorChat>>,
+    { data: BodyType<MentorChatRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return mentorChat(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type MentorChatMutationResult = NonNullable<
+  Awaited<ReturnType<typeof mentorChat>>
+>;
+export type MentorChatMutationBody = BodyType<MentorChatRequest>;
+export type MentorChatMutationError = ErrorType<MentorError>;
+
+/**
+ * @summary Send a chat message to the AI mentor and get a reply
+ */
+export const useMentorChat = <
+  TError = ErrorType<MentorError>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof mentorChat>>,
+    TError,
+    { data: BodyType<MentorChatRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof mentorChat>>,
+  TError,
+  { data: BodyType<MentorChatRequest> },
+  TContext
+> => {
+  return useMutation(getMentorChatMutationOptions(options));
+};

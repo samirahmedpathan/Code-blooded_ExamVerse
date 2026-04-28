@@ -7,3 +7,8 @@
  */
 
 export * from "./healthStatus";
+export * from "./mentorChatMessage";
+export * from "./mentorChatMessageRole";
+export * from "./mentorChatRequest";
+export * from "./mentorError";
+export * from "./mentorReply";

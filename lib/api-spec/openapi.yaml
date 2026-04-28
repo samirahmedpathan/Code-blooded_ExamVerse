@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: mentor
+    description: AI Mentor chat
 paths:
   /healthz:
     get:
@@ -24,6 +26,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /mentor/chat:
+    post:
+      operationId: mentorChat
+      tags: [mentor]
+      summary: Send a chat message to the AI mentor and get a reply
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MentorChatRequest"
+      responses:
+        "200":
+          description: Mentor reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MentorReply"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MentorError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +59,42 @@ components:
           type: string
       required:
         - status
+    MentorChatMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+      required:
+        - role
+        - content
+    MentorChatRequest:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/MentorChatMessage"
+        examTarget:
+          type: string
+        studentName:
+          type: string
+      required:
+        - messages
+    MentorReply:
+      type: object
+      properties:
+        reply:
+          type: string
+      required:
+        - reply
+    MentorError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
 

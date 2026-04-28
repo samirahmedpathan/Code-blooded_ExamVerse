@@ -8,3 +8,30 @@
 export interface HealthStatus {
   status: string;
 }
+
+export type MentorChatMessageRole =
+  (typeof MentorChatMessageRole)[keyof typeof MentorChatMessageRole];
+
+export const MentorChatMessageRole = {
+  user: "user",
+  assistant: "assistant",
+} as const;
+
+export interface MentorChatMessage {
+  role: MentorChatMessageRole;
+  content: string;
+}
+
+export interface MentorChatRequest {
+  messages: MentorChatMessage[];
+  examTarget?: string;
+  studentName?: string;
+}
+
+export interface MentorReply {
+  reply: string;
+}
+
+export interface MentorError {
+  error: string;
+}

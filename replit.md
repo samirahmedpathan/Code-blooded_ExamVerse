@@ -15,6 +15,7 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
+- **AI**: Gemini via Replit AI Integrations (`lib/integrations-gemini-ai`); used by `POST /api/mentor/chat` to power the Examverse AI Mentor (model: `gemini-2.5-flash`).
 
 ## Key Commands
 
