@@ -101,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     localStorage.removeItem(AUTH_KEY);
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem("examverse:remembered");
     setLocation("/");
   };
 

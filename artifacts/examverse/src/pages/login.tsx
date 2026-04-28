@@ -31,6 +31,27 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+const REMEMBER_KEY = "examverse:remembered";
+
+interface RememberedLogin {
+  emailOrName: string;
+  password: string;
+  targetExam: string;
+  language: string;
+}
+
+function loadRemembered(): RememberedLogin | null {
+  try {
+    const raw = localStorage.getItem(REMEMBER_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as RememberedLogin;
+    if (typeof parsed?.emailOrName === "string") return parsed;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 const ROTATING_LINES = [
   { en: "Sharper focus,", hi: "तेज़ ध्यान,", ta: "கூர்ந்த கவனம்,", te: "నిశితమైన దృష్టి,", kn: "ತೀಕ್ಷ್ಣ ಗಮನ," },
   { en: "smarter prep,", hi: "स्मार्ट तैयारी,", ta: "மாட்சிமை தயாரிப்பு,", te: "తెలివైన సన్నద్ధత,", kn: "ಸ್ಮಾರ್ಟ್ ತಯಾರಿ," },
@@ -173,6 +194,8 @@ export default function Login() {
   const [targetExam, setTargetExam] = useState<string>("JEE");
   const [language, setLanguage] = useState<string>("EN");
   const [tickIdx, setTickIdx] = useState(0);
+  const [remember, setRemember] = useState<boolean>(true);
+  const [hasRemembered, setHasRemembered] = useState<boolean>(false);
 
   useEffect(() => {
     const t = setInterval(() => setTickIdx((i) => (i + 1) % ROTATING_LINES.length), 2200);
@@ -182,15 +205,46 @@ export default function Login() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
 
+  useEffect(() => {
+    const saved = loadRemembered();
+    if (saved) {
+      setHasRemembered(true);
+      setRemember(true);
+      if (saved.targetExam) setTargetExam(saved.targetExam);
+      if (saved.language) setLanguage(saved.language);
+      reset({ emailOrName: saved.emailOrName ?? "", password: saved.password ?? "" });
+    }
+  }, [reset]);
+
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     await new Promise((r) => setTimeout(r, 500));
     setIsLoading(false);
+    if (remember) {
+      const payload: RememberedLogin = {
+        emailOrName: data.emailOrName,
+        password: data.password,
+        targetExam,
+        language,
+      };
+      try {
+        localStorage.setItem(REMEMBER_KEY, JSON.stringify(payload));
+      } catch {
+        // ignore storage errors (private mode, etc.)
+      }
+    } else {
+      try {
+        localStorage.removeItem(REMEMBER_KEY);
+      } catch {
+        // ignore
+      }
+    }
     login({
       emailOrName: data.emailOrName,
       targetExam,
@@ -482,6 +536,37 @@ export default function Login() {
                         <p className="text-sm text-destructive">{errors.password.message}</p>
                       )}
                     </div>
+
+                    <label className="flex items-center gap-2 select-none cursor-pointer text-sm text-muted-foreground pt-1">
+                      <input
+                        type="checkbox"
+                        checked={remember}
+                        onChange={(e) => setRemember(e.target.checked)}
+                        className="h-4 w-4 rounded border-border text-primary focus:ring-primary accent-[hsl(var(--primary))]"
+                      />
+                      <span>
+                        {{
+                          EN: "Remember my login details on this device",
+                          HI: "इस डिवाइस पर मेरे लॉगिन विवरण याद रखें",
+                          KN: "ಈ ಸಾಧನದಲ್ಲಿ ನನ್ನ ಲಾಗಿನ್ ವಿವರಗಳನ್ನು ನೆನಪಿಡಿ",
+                          TA: "இந்த சாதனத்தில் எனது உள்நுழைவு விவரங்களை நினைவில் வைத்திரு",
+                          TE: "ఈ పరికరంలో నా లాగిన్ వివరాలను గుర్తుంచుకో",
+                          BN: "এই ডিভাইসে আমার লগইন তথ্য মনে রাখুন",
+                        }[language] ?? "Remember my login details on this device"}
+                      </span>
+                    </label>
+                    {hasRemembered && (
+                      <p className="text-[11px] text-primary/80 -mt-1">
+                        {{
+                          EN: "Auto-filled from your last sign-in.",
+                          HI: "आपके पिछले साइन-इन से अपने आप भरा गया।",
+                          KN: "ನಿಮ್ಮ ಕೊನೆಯ ಸೈನ್-ಇನ್‌ನಿಂದ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತುಂಬಿದೆ.",
+                          TA: "உங்கள் கடந்த உள்நுழைவில் இருந்து தானாக நிரப்பப்பட்டது.",
+                          TE: "మీ చివరి సైన్-ఇన్ నుండి స్వయంచాలకంగా నింపబడింది.",
+                          BN: "আপনার শেষ সাইন-ইন থেকে স্বয়ংক্রিয়ভাবে পূরণ হয়েছে।",
+                        }[language] ?? "Auto-filled from your last sign-in."}
+                      </p>
+                    )}
 
                     <motion.div whileTap={{ scale: 0.98 }}>
                       <Button
