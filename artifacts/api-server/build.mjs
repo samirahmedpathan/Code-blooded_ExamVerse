@@ -3,12 +3,35 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { build as esbuild } from "esbuild";
 import esbuildPluginPino from "esbuild-plugin-pino";
-import { rm } from "node:fs/promises";
+import { rm, cp, stat } from "node:fs/promises";
 
 // Plugins (e.g. 'esbuild-plugin-pino') may use `require` to resolve dependencies
 globalThis.require = createRequire(import.meta.url);
 
 const artifactDir = path.dirname(fileURLToPath(import.meta.url));
+
+async function copyFrontend() {
+  const frontendDist = path.resolve(
+    artifactDir,
+    "..",
+    "examverse",
+    "dist",
+    "public",
+  );
+  const target = path.resolve(artifactDir, "public");
+  try {
+    const s = await stat(frontendDist);
+    if (!s.isDirectory()) return;
+  } catch {
+    console.log(
+      `[build] Frontend dist not found at ${frontendDist}, skipping copy.`,
+    );
+    return;
+  }
+  await rm(target, { recursive: true, force: true });
+  await cp(frontendDist, target, { recursive: true });
+  console.log(`[build] Copied frontend assets to ${target}`);
+}
 
 async function buildAll() {
   const distDir = path.resolve(artifactDir, "dist");
@@ -120,7 +143,9 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
   });
 }
 
-buildAll().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+buildAll()
+  .then(() => copyFrontend())
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
