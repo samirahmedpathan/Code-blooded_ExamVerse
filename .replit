@@ -49,8 +49,9 @@ waitForPort = 23432
 outputType = "webview"
 
 [agent]
-stack = "PNPM_WORKSPACE"
+stack = "BEST_EFFORT_FALLBACK"
 expertMode = true
+integrations = ["javascript_gemini_ai_integrations:2.0.0"]
 
 [postMerge]
 path = "scripts/post-merge.sh"
@@ -71,3 +72,6 @@ externalPort = 3002
 [[ports]]
 localPort = 23480
 externalPort = 3000
+
+[nix]
+channel = "stable-25_05"
