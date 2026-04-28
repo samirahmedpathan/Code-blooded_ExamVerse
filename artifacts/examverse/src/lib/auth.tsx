@@ -1,112 +1,142 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useLocation } from "wouter";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  targetExam: string;
-  language: string;
-}
+import { authApi, getToken, setToken, type AuthUser, ApiError } from "./api";
 
 interface SignupInput {
   name: string;
   email: string;
+  password: string;
   targetExam: string;
   language: string;
 }
 
 interface LoginInput {
   emailOrName: string;
-  targetExam: string;
-  language: string;
+  password: string;
+  targetExam?: string;
+  language?: string;
 }
 
 interface AuthContextType {
-  user: User | null;
-  login: (input: LoginInput) => void;
-  signup: (input: SignupInput) => void;
-  updateProfile: (updates: Partial<User>) => void;
+  user: AuthUser | null;
+  loading: boolean;
+  login: (input: LoginInput) => Promise<void>;
+  signup: (input: SignupInput) => Promise<void>;
+  updateProfile: (updates: Partial<AuthUser>) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 const USER_KEY = "examverse:user";
-const AUTH_KEY = "examverse:authed";
+const REMEMBER_KEY = "examverse:remembered";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    const authed = localStorage.getItem(AUTH_KEY);
-    if (authed === "true") {
-      const storedUser = localStorage.getItem(USER_KEY);
-      if (storedUser) {
+    let cancelled = false;
+    async function bootstrap() {
+      const cached = (() => {
         try {
-          setUser(JSON.parse(storedUser));
+          const raw = localStorage.getItem(USER_KEY);
+          return raw ? (JSON.parse(raw) as AuthUser) : null;
         } catch {
-          setUser(null);
+          return null;
         }
+      })();
+      if (cached) setUser(cached);
+
+      const token = getToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const me = await authApi.me();
+        if (cancelled) return;
+        setUser(me.user);
+        try {
+          localStorage.setItem(USER_KEY, JSON.stringify(me.user));
+        } catch {
+          // ignore
+        }
+      } catch (e) {
+        if (e instanceof ApiError && (e.status === 401 || e.status === 404)) {
+          setToken(null);
+          try {
+            localStorage.removeItem(USER_KEY);
+          } catch {
+            // ignore
+          }
+          if (!cancelled) setUser(null);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
+    bootstrap();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const persist = (next: User) => {
+  const persist = (next: AuthUser, token: string) => {
     setUser(next);
-    localStorage.setItem(AUTH_KEY, "true");
-    localStorage.setItem(USER_KEY, JSON.stringify(next));
+    setToken(token);
+    try {
+      localStorage.setItem(USER_KEY, JSON.stringify(next));
+    } catch {
+      // ignore
+    }
   };
 
-  const login = (input: LoginInput) => {
-    const looksLikeEmail = input.emailOrName.includes("@");
-    const next: User = {
-      id: "1",
-      name: looksLikeEmail
-        ? input.emailOrName.split("@")[0].replace(/[._]/g, " ")
-        : input.emailOrName,
-      email: looksLikeEmail
-        ? input.emailOrName
-        : `${input.emailOrName.toLowerCase().replace(/\s+/g, ".")}@examverse.app`,
-      targetExam: input.targetExam,
-      language: input.language,
-    };
-    persist(next);
+  const login = async (input: LoginInput) => {
+    const res = await authApi.login({
+      emailOrName: input.emailOrName,
+      password: input.password,
+    });
+    persist(res.user, res.token);
     setLocation("/app");
   };
 
-  const signup = (input: SignupInput) => {
-    const next: User = {
-      id: "1",
-      name: input.name,
-      email: input.email,
-      targetExam: input.targetExam,
-      language: input.language,
-    };
-    persist(next);
+  const signup = async (input: SignupInput) => {
+    const res = await authApi.signup(input);
+    persist(res.user, res.token);
     setLocation("/app");
   };
 
-  const updateProfile = (updates: Partial<User>) => {
+  const updateProfile = (updates: Partial<AuthUser>) => {
     setUser((prev) => {
       if (!prev) return prev;
       const next = { ...prev, ...updates };
-      localStorage.setItem(USER_KEY, JSON.stringify(next));
+      try {
+        localStorage.setItem(USER_KEY, JSON.stringify(next));
+      } catch {
+        // ignore
+      }
       return next;
     });
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem(AUTH_KEY);
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem("examverse:remembered");
+    setToken(null);
+    try {
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(REMEMBER_KEY);
+    } catch {
+      // ignore
+    }
     setLocation("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, updateProfile, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, signup, updateProfile, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

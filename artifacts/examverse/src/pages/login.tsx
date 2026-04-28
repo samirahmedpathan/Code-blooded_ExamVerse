@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { useAuth } from "@/lib/auth";
+import { ApiError } from "@/lib/api";
 import { EXAMS, LANGUAGES } from "@/lib/exams";
 
 const loginSchema = z.object({
@@ -196,6 +197,7 @@ export default function Login() {
   const [tickIdx, setTickIdx] = useState(0);
   const [remember, setRemember] = useState<boolean>(true);
   const [hasRemembered, setHasRemembered] = useState<boolean>(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setInterval(() => setTickIdx((i) => (i + 1) % ROTATING_LINES.length), 2200);
@@ -223,33 +225,41 @@ export default function Login() {
   }, [reset]);
 
   const onSubmit = async (data: LoginFormValues) => {
+    setServerError(null);
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 500));
-    setIsLoading(false);
-    if (remember) {
-      const payload: RememberedLogin = {
+    try {
+      await login({
         emailOrName: data.emailOrName,
         password: data.password,
-        targetExam,
-        language,
-      };
-      try {
-        localStorage.setItem(REMEMBER_KEY, JSON.stringify(payload));
-      } catch {
-        // ignore storage errors (private mode, etc.)
+      });
+      if (remember) {
+        const payload: RememberedLogin = {
+          emailOrName: data.emailOrName,
+          password: data.password,
+          targetExam,
+          language,
+        };
+        try {
+          localStorage.setItem(REMEMBER_KEY, JSON.stringify(payload));
+        } catch {
+          // ignore
+        }
+      } else {
+        try {
+          localStorage.removeItem(REMEMBER_KEY);
+        } catch {
+          // ignore
+        }
       }
-    } else {
-      try {
-        localStorage.removeItem(REMEMBER_KEY);
-      } catch {
-        // ignore
+    } catch (e) {
+      if (e instanceof ApiError) {
+        setServerError(e.message);
+      } else {
+        setServerError("Could not sign in. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
-    login({
-      emailOrName: data.emailOrName,
-      targetExam,
-      language,
-    });
   };
 
   const langLineKey: Record<string, "en" | "hi" | "ta" | "te" | "kn"> = {
@@ -495,6 +505,11 @@ export default function Login() {
                   </button>
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    {serverError && (
+                      <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                        {serverError}
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <Label htmlFor="emailOrName">{(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).nameOrEmail}</Label>
                       <Input
@@ -511,9 +526,9 @@ export default function Login() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="password">{(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).password}</Label>
-                        <a href="#" className="text-xs text-primary font-medium hover:underline underline-offset-4">
+                        <Link href="/forgot-password" className="text-xs text-primary font-medium hover:underline underline-offset-4">
                           {(LOGIN_LABELS[language] ?? LOGIN_LABELS.EN).forgot}
-                        </a>
+                        </Link>
                       </div>
                       <div className="relative">
                         <Input

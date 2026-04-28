@@ -17,6 +17,17 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Build**: esbuild (CJS bundle)
 - **AI**: Gemini via Replit AI Integrations (`lib/integrations-gemini-ai`); used by `POST /api/mentor/chat` to power the Examverse AI Mentor (model: `gemini-2.5-flash`).
 
+## Authentication
+
+Real database-backed auth lives in `lib/db/src/schema/users.ts` (`users` and `password_resets` tables) and `artifacts/api-server/src/routes/auth.ts`. Passwords are hashed with **bcryptjs (cost 12)**; sessions are stateless **JWTs** signed with `SESSION_SECRET` (HS256, 30-day TTL). The frontend calls the API through a Vite dev proxy (`/api → http://localhost:8080`) and stores the token in `localStorage` under `examverse:token`. On boot, `AuthProvider` calls `GET /api/auth/me` to validate the token. Routes:
+- `POST /api/auth/signup` — creates user (email must be unique, case-insensitive), returns `{ token, user }`.
+- `POST /api/auth/login` — verifies bcrypt hash, returns `{ token, user }`. Both unknown user and wrong password return the same generic message `"Invalid username or password."` to avoid user enumeration.
+- `GET /api/auth/me` — bearer-protected, returns the current user.
+- `POST /api/auth/forgot-password` — generates a SHA-256-hashed 32-byte reset token (stored in `password_resets`, expires in 30 min). Always returns `{ ok: true }` to avoid leaking which emails are registered. In dev (`NODE_ENV !== "production"`) the raw token is also returned so the user can preview the reset link without an email service.
+- `POST /api/auth/reset-password` — accepts `{ token, password }`, validates against the hashed token, marks it `usedAt`, updates the bcrypt hash. Reset rows are single-use.
+
+Frontend pages: `/login`, `/signup`, `/forgot-password`, `/reset-password?token=…`. The login form remembers credentials locally (`examverse:remembered`) for auto-fill — that's separate from the JWT and is cleared on logout.
+
 ## Examverse Domain Modules
 
 - **Schemes** (`artifacts/examverse/src/lib/schemes.ts` + `pages/app/schemes.tsx`): Curated yearly Government of India schemes (PM-KISAN, Ayushman Bharat, PLI, Digital India, Agnipath, etc.) tagged with `launchedYear`, `lastUpdatedYear` (auto-rolls to current year) and a `yearlyUpdate` note. Filterable by exam relevance and category. Top 2 schemes also surface on the dashboard.

@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { useAuth } from "@/lib/auth";
+import { ApiError } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import { EXAMS, LANGUAGES } from "@/lib/exams";
 
@@ -49,6 +50,7 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [targetExam, setTargetExam] = useState<string>("JEE");
   const [language, setLanguage] = useState<string>("EN");
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -64,15 +66,25 @@ export default function Signup() {
   const agreeTerms = watch("agreeTerms");
 
   const onSubmit = async (data: SignupFormValues) => {
+    setServerError(null);
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 500));
-    setIsLoading(false);
-    signup({
-      name: data.fullName,
-      email: data.email,
-      targetExam,
-      language,
-    });
+    try {
+      await signup({
+        name: data.fullName,
+        email: data.email,
+        password: data.password,
+        targetExam,
+        language,
+      });
+    } catch (e) {
+      if (e instanceof ApiError) {
+        setServerError(e.message);
+      } else {
+        setServerError("Could not create your account. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -144,6 +156,11 @@ export default function Signup() {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="px-7 pb-7 space-y-4">
+              {serverError && (
+                <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {serverError}
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input

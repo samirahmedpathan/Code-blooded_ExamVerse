@@ -7,11 +7,14 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 
 import { AuthProvider } from "@/lib/auth";
 import { ProgressProvider } from "@/lib/progress";
 import { I18nProvider } from "@/lib/i18n";
 import { AppLayout } from "@/components/layout/app-layout";
+import { StudyBackdrop } from "@/components/study-backdrop";
 
 import Dashboard from "@/pages/app/dashboard";
 import Roadmap from "@/pages/app/roadmap";
@@ -45,6 +48,8 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
+        <Route path="/forgot-password" component={ForgotPassword} />
+        <Route path="/reset-password" component={ResetPassword} />
 
         <Route path="/app">
           <AppRoute component={Dashboard} />
@@ -103,6 +108,7 @@ function App() {
           <AuthProvider>
             <I18nProvider>
               <ProgressProvider>
+                <StudyBackdrop />
                 <Router />
                 <Toaster />
               </ProgressProvider>

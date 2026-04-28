@@ -223,21 +223,110 @@
   body {
     @apply font-sans antialiased text-foreground;
     background-color: hsl(var(--background));
+    /* Premium "study" gradient: deep navy → royal blue → emerald, with a soft warm gold glow.
+       Layered radial gradients on a fixed background for a calm, premium learning atmosphere. */
     background-image:
-      radial-gradient(at 8% 4%, hsla(38, 92%, 78%, 0.32) 0px, transparent 55%),
-      radial-gradient(at 92% 6%, hsla(168, 76%, 70%, 0.30) 0px, transparent 55%),
-      radial-gradient(at 78% 96%, hsla(262, 80%, 80%, 0.28) 0px, transparent 55%),
-      radial-gradient(at 12% 92%, hsla(346, 90%, 82%, 0.28) 0px, transparent 55%),
-      radial-gradient(at 50% 50%, hsla(48, 100%, 92%, 0.45) 0px, transparent 70%);
+      radial-gradient(at 12% 8%, hsla(218, 72%, 28%, 0.18) 0px, transparent 55%),
+      radial-gradient(at 88% 10%, hsla(165, 65%, 38%, 0.16) 0px, transparent 55%),
+      radial-gradient(at 50% 92%, hsla(218, 70%, 32%, 0.15) 0px, transparent 60%),
+      radial-gradient(at 78% 70%, hsla(45, 92%, 72%, 0.16) 0px, transparent 50%),
+      radial-gradient(at 18% 78%, hsla(168, 70%, 60%, 0.14) 0px, transparent 55%),
+      linear-gradient(180deg, hsla(210, 40%, 99%, 1) 0%, hsla(168, 30%, 97%, 1) 60%, hsla(218, 35%, 97%, 1) 100%);
     background-attachment: fixed;
   }
 
   .dark body {
     background-image:
-      radial-gradient(at 8% 4%, hsla(168, 70%, 30%, 0.40) 0px, transparent 55%),
-      radial-gradient(at 92% 6%, hsla(262, 60%, 35%, 0.35) 0px, transparent 55%),
-      radial-gradient(at 78% 96%, hsla(38, 70%, 30%, 0.30) 0px, transparent 55%),
-      radial-gradient(at 12% 92%, hsla(346, 60%, 30%, 0.30) 0px, transparent 55%);
+      radial-gradient(at 12% 8%, hsla(218, 80%, 18%, 0.85) 0px, transparent 55%),
+      radial-gradient(at 88% 10%, hsla(165, 65%, 22%, 0.55) 0px, transparent 55%),
+      radial-gradient(at 50% 92%, hsla(218, 80%, 14%, 0.85) 0px, transparent 60%),
+      radial-gradient(at 78% 70%, hsla(45, 80%, 38%, 0.18) 0px, transparent 50%),
+      linear-gradient(180deg, hsl(220 45% 8%) 0%, hsl(218 50% 10%) 100%);
+  }
+}
+
+/* ----- Premium "study atmosphere" overlay & floating academic icons ----- */
+@layer utilities {
+  /* Faint moving conic shimmer behind the page, sits below all content */
+  .study-aurora {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background:
+      conic-gradient(
+        from 210deg at 80% 0%,
+        hsla(218, 70%, 35%, 0.10),
+        hsla(165, 70%, 50%, 0.08),
+        hsla(45, 90%, 65%, 0.10),
+        hsla(218, 70%, 35%, 0.10)
+      );
+    filter: blur(60px);
+    opacity: 0.55;
+    animation: study-aurora-shift 26s ease-in-out infinite alternate;
+  }
+  .dark .study-aurora {
+    opacity: 0.35;
+  }
+
+  @keyframes study-aurora-shift {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+    100% { transform: translate3d(-2%, 1%, 0) rotate(8deg); }
+  }
+
+  .study-particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .study-particle {
+    position: absolute;
+    color: hsl(218 65% 35% / 0.32);
+    will-change: transform, opacity;
+    animation-name: study-float;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    filter: drop-shadow(0 4px 14px hsla(45, 90%, 60%, 0.25));
+  }
+  .dark .study-particle {
+    color: hsl(165 60% 70% / 0.32);
+    filter: drop-shadow(0 4px 14px hsla(45, 90%, 60%, 0.18));
+  }
+  /* Alternating subtle gold accent on a few icons */
+  .study-particle.accent-gold {
+    color: hsl(42 78% 52% / 0.55);
+  }
+  .dark .study-particle.accent-gold {
+    color: hsl(45 90% 65% / 0.55);
+  }
+  .study-particle.accent-emerald {
+    color: hsl(165 65% 38% / 0.45);
+  }
+  .dark .study-particle.accent-emerald {
+    color: hsl(165 65% 60% / 0.45);
+  }
+
+  @keyframes study-float {
+    0%   { transform: translate3d(0, 0, 0) rotate(-6deg); opacity: 0.55; }
+    50%  { transform: translate3d(14px, -22px, 0) rotate(6deg); opacity: 0.85; }
+    100% { transform: translate3d(0, 0, 0) rotate(-6deg); opacity: 0.55; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .study-aurora,
+    .study-particle {
+      animation: none !important;
+    }
+  }
+
+  /* Hide background eye-candy on small screens to keep the layout focused */
+  @media (max-width: 640px) {
+    .study-particles {
+      display: none;
+    }
   }
 }
 
