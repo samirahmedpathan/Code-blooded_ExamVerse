@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useProgress } from "@/lib/progress";
 import { EXAMS, LANGUAGES } from "@/lib/exams";
@@ -9,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, User, Globe, Save, Target, Sparkles, RefreshCw } from "lucide-react";
+import { ArrowLeft, LogOut, User, Globe, Save, Target, Sparkles, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
@@ -17,6 +18,7 @@ export default function Settings() {
   const { resetAll, state, todayCredits, streak } = useProgress();
   const { toast } = useToast();
   const { t } = useT();
+  const [, setLocation] = useLocation();
 
   const [name, setName] = useState(user?.name ?? "");
   const [targetExam, setTargetExam] = useState(user?.targetExam ?? "JEE");
@@ -40,8 +42,8 @@ export default function Settings() {
   const handleSave = () => {
     updateProfile({ name, targetExam, language });
     toast({
-      title: "Profile updated",
-      description: `Now studying for ${EXAMS.find((e) => e.code === targetExam)?.short ?? targetExam} in ${LANGUAGES.find((l) => l.code === language)?.native}.`,
+      title: t("settings.profileUpdated"),
+      description: `${t("settings.nowStudyingFor")} ${EXAMS.find((e) => e.code === targetExam)?.short ?? targetExam} ${t("settings.inLang")} ${LANGUAGES.find((l) => l.code === language)?.native}.`,
     });
   };
 
@@ -52,14 +54,24 @@ export default function Settings() {
   };
 
   const handleResetProgress = () => {
-    if (window.confirm("Reset all credits, streaks and quiz history? This cannot be undone.")) {
+    if (window.confirm(t("settings.resetConfirm"))) {
       resetAll();
-      toast({ title: "Progress reset", description: "All credits and history cleared." });
+      toast({ title: t("settings.resetDone"), description: t("settings.resetDoneDesc") });
     }
   };
 
   return (
     <div className="max-w-3xl space-y-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setLocation("/app")}
+        className="-ml-2 text-muted-foreground hover:text-foreground"
+        data-testid="button-back"
+      >
+        <ArrowLeft className="w-4 h-4 mr-1" /> {t("common.back")}
+      </Button>
+
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("nav.settings")}</h1>
         <p className="text-muted-foreground mt-1">{t("settings.profile")} · {t("common.language")}</p>
@@ -92,11 +104,11 @@ export default function Settings() {
         <CardContent className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">{t("settings.fullName")}</Label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">{t("settings.email")}</Label>
               <Input id="email" defaultValue={user?.email} disabled className="bg-muted/50" />
             </div>
           </div>
@@ -131,7 +143,7 @@ export default function Settings() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hours">Daily Target (Hours)</Label>
+            <Label htmlFor="hours">{t("settings.dailyHours")}</Label>
             <Input
               id="hours"
               type="number"
@@ -151,9 +163,9 @@ export default function Settings() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Globe className="w-5 h-5" /> App Preferences
+            <Globe className="w-5 h-5" /> {t("settings.appPrefs")}
           </CardTitle>
-          <CardDescription>Customize how Examverse looks and feels.</CardDescription>
+          <CardDescription>{t("settings.appPrefsDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-3">
@@ -187,23 +199,23 @@ export default function Settings() {
               })}
             </div>
             <Badge variant="outline" className="text-xs">
-              {LANGUAGES.find((l) => l.code === language)?.greeting} — your AI mentor will greet you in this language.
+              {LANGUAGES.find((l) => l.code === language)?.greeting} — {t("settings.mentorGreets")}
             </Badge>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label className="text-base">Dark Mode</Label>
-              <p className="text-sm text-muted-foreground">Switch to a dark, restful color scheme.</p>
+              <Label className="text-base">{t("settings.darkMode")}</Label>
+              <p className="text-sm text-muted-foreground">{t("settings.darkModeDesc")}</p>
             </div>
             <Switch checked={isDarkMode} onCheckedChange={toggleTheme} />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label className="text-base">Lite Mode (Low Data)</Label>
+              <Label className="text-base">{t("settings.liteMode")}</Label>
               <p className="text-sm text-muted-foreground">
-                Disables animations and heavy assets for faster loading.
+                {t("settings.liteModeDesc")}
               </p>
             </div>
             <Switch checked={isLiteMode} onCheckedChange={setIsLiteMode} />
@@ -214,13 +226,13 @@ export default function Settings() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5" /> Progress
+            <Sparkles className="w-5 h-5" /> {t("settings.progress")}
           </CardTitle>
-          <CardDescription>Reset your local credits, streaks and quiz history.</CardDescription>
+          <CardDescription>{t("settings.progressDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="outline" onClick={handleResetProgress}>
-            <RefreshCw className="w-4 h-4 mr-2" /> Reset progress
+            <RefreshCw className="w-4 h-4 mr-2" /> {t("settings.resetProgress")}
           </Button>
         </CardContent>
       </Card>
