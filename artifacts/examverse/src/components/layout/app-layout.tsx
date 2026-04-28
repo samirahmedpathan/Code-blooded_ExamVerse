@@ -47,17 +47,16 @@ const NAV_ITEMS = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const { todayCredits, state, streak } = useProgress();
   const { t } = useT();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const authed = localStorage.getItem("examverse:authed");
-    if (authed !== "true") {
+    if (!loading && !user) {
       setLocation("/login");
     }
-  }, [location, setLocation]);
+  }, [loading, user, setLocation]);
 
   const exam = user ? findExam(user.targetExam) : null;
   const lang = user ? findLanguage(user.language) : null;

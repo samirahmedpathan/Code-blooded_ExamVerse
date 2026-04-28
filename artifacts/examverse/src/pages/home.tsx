@@ -30,8 +30,8 @@ export default function Home() {
 
   // Redirect to app if already authenticated
   useEffect(() => {
-    const authed = localStorage.getItem("examverse:authed");
-    if (authed === "true") {
+    const token = localStorage.getItem("examverse:token");
+    if (token) {
       setLocation("/app");
     }
   }, [setLocation]);
