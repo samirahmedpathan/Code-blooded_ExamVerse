@@ -14,6 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AuthLayout, TornEdgeDivider } from "@/components/layout/auth-layout";
 import { Logo } from "@/components/logo";
 
+import { useAuth } from "@/lib/auth";
+
 const signupSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -31,6 +33,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function Signup() {
   const [, setLocation] = useLocation();
+  const { signup } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,9 +57,9 @@ export default function Signup() {
   const onSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
     // Fake backend delay
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 600));
     setIsLoading(false);
-    setLocation("/");
+    signup(data.fullName, data.email);
   };
 
   return (

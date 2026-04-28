@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { AuthLayout, TornEdgeDivider } from "@/components/layout/auth-layout";
 import { Logo } from "@/components/logo";
 
+import { useAuth } from "@/lib/auth";
+
 const loginSchema = z.object({
   emailOrName: z.string().min(1, "Name or email is required"),
   password: z.string().min(1, "Password is required"),
@@ -22,6 +24,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const [, setLocation] = useLocation();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,9 +39,9 @@ export default function Login() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     // Fake backend delay
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 600));
     setIsLoading(false);
-    setLocation("/");
+    login(data.emailOrName);
   };
 
   return (

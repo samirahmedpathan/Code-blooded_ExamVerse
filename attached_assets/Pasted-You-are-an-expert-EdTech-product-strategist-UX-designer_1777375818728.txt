@@ -1,0 +1,88 @@
+You are an expert EdTech product strategist, UX designer, and prompt engineer specializing in competitive exam preparation platforms for India (JEE, NEET, UPSC, SSC, Banking, GATE, etc.) and similar global exams.
+
+Create a comprehensive, compelling vision and detailed blueprint for a smart, modern, AI-first website targeted at serious students preparing for high-stakes competitive exams. The platform name should be catchy, memorable, and motivational (suggest 3-5 options like "ExamSage", "PrepVibe", "AstraStudy", "KarmaQuest", "FocusForge", etc., and pick the best one).
+
+Core Vision
+
+Build an all-in-one intelligent companion that feels like a personal AI mentor + smart study coach that adapts to the student's real life — not just syllabus, but energy, mood, time constraints, and weaknesses. It makes preparation efficient, sustainable, less stressful, and highly effective, especially for students in low-data or multilingual environments in India and similar countries.
+
+Must-Have Features (integrate all of these intelligently):
+
+Exam Roadmaps: Personalized, adaptive roadmaps based on target exam, timeline, current level, and syllabus coverage.
+
+Time Management & Scheduler: Intelligent daily/weekly planner with Pomodoro-style sessions.
+
+Mood-Based Planner: Detects or lets user input mood/energy (e.g., "stressed", "energetic", "low focus", "motivated") and adjusts task difficulty, session length, breaks, and content type accordingly (lighter revision on low-mood days, deep practice on high-energy days). Include personal mood-based daily tasks.
+
+Adaptive Quiz Engine: Spaced repetition + adaptive difficulty. Generates quizzes from PYQs (Previous Year Questions), question banks, and custom topics. Difficulty ramps based on performance.
+
+Weakness Analyzer: Deep performance analytics that identifies weak topics/chapters/concepts with heatmaps, trend graphs, and prioritized improvement plans.
+
+Daily Challenges: Gamified short daily tasks, streaks, leaderboards (optional), and rewards to build consistency.
+
+Quizzes / PYQs / Question Banks: Vast, searchable, categorized database with solutions and explanations. Support uploading personal notes/PDFs.
+
+Free Study Resources & Resource Finder: Curates and recommends high-quality free resources (NCERT summaries, YouTube videos, PDFs, open textbooks, etc.). AI-powered search for best free materials.
+
+Book Suggestions: Personalized book recommendations (standard + advanced) based on current level and weaknesses.
+
+AI Chat Mentor: A friendly, knowledgeable, encouraging AI tutor/mentor that can explain concepts, solve doubts step-by-step, evaluate answers, motivate, and act like a 24/7 guide. Support voice + text.
+
+Low-data Lite Mode: Optimized for slow internet — text-first, compressed images, offline-capable quizzes/progress sync.
+
+Multi-language Support: Primary support for English + Hindi (and easy extension to regional languages like Tamil, Telugu, Bengali, etc.).
+
+
+Additional Smart Elements:
+
+Progress tracking dashboard with visual insights.
+
+Gamification (points, badges, levels, streaks) without making it childish.
+
+Community lite features (optional doubt forums or peer motivation).
+
+Mobile-first responsive design + PWA support.
+
+
+Tone & Personality
+
+Motivational yet realistic and empathetic (understands Indian student pressure, burnout, parental expectations).
+
+Clean, modern, calming + energetic UI (use greens, blues, oranges for focus and motivation).
+
+Professional but approachable — never condescending.
+
+
+Deliver the Following Output Structure:
+
+1. Platform Name & Tagline (choose the best one with reasoning).
+
+
+2. Hero Section Copy (compelling headline, subheadline, CTA).
+
+
+3. Detailed Feature Breakdown — For each feature, write a short catchy name + 2-3 sentence description + how AI makes it powerful.
+
+
+4. User Journey / Onboarding Flow (from signup to first personalized roadmap).
+
+
+5. Unique Selling Points (what makes this better than Unacademy, Physics Wallah, BYJU's, SuperKalam, PadhAI, etc.).
+
+
+6. Tech Highlights (how AI powers each part — adaptive algorithms, weakness detection via ML, mood integration, etc.).
+
+
+7. Monetization Ideas (freemium model — core free, premium for advanced analytics, unlimited AI mentor, ad-free, etc.).
+
+
+8. Landing Page Section Outline (full structure with headings and key points).
+
+
+9. Suggestions for Implementation (priority features for MVP, data privacy notes, integration ideas).
+
+
+
+Make everything highly engaging, benefit-focused, and student-centric. Use persuasive, aspirational language that resonates with ambitious yet overwhelmed competitive exam aspirants. Ensure the platform feels intelligent, supportive, and built to reduce stress while maximizing scores.
+
+Be creative, detailed, and actionable. Output in well-formatted Markdown with clear sections.

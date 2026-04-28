@@ -1,4 +1,5 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useEffect } from "react";
 import { BookOpen, BookCheck, LineChart, Target, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -25,6 +26,16 @@ function Navbar() {
 }
 
 export default function Home() {
+  const [, setLocation] = useLocation();
+
+  // Redirect to app if already authenticated
+  useEffect(() => {
+    const authed = localStorage.getItem("examverse:authed");
+    if (authed === "true") {
+      setLocation("/app");
+    }
+  }, [setLocation]);
+
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background font-sans overflow-x-hidden">
       <Navbar />
