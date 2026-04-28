@@ -1,22 +1,35 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRoute } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ChevronRight, ChevronLeft, ArrowRight, CheckCircle2, XCircle, TrendingUp, TrendingDown } from "lucide-react";
+import { ChevronRight, ChevronLeft, CheckCircle2, XCircle, TrendingUp, TrendingDown, Sparkles } from "lucide-react";
 import { MOCK_DATA } from "@/lib/mockData";
 import { motion, AnimatePresence } from "framer-motion";
+import { useProgress } from "@/lib/progress";
 
 export default function QuizPlayer() {
   const [, params] = useRoute("/app/quizzes/:id");
-  const id = params?.id || "q1";
+  const id = params?.id || "q-jee-1";
   const quiz = MOCK_DATA.quizzes.find(q => q.id === id) || MOCK_DATA.quizzes[0];
   const questions = MOCK_DATA.sampleQuizQuestions;
+  const { recordQuiz } = useProgress();
+  const recordedRef = useRef(false);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showExplanation, setShowExplanation] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+
+  useEffect(() => {
+    if (isFinished && !recordedRef.current) {
+      const correct = Object.entries(selectedAnswers).filter(
+        ([i, ans]) => ans === questions[Number(i)].correctIndex,
+      ).length;
+      recordQuiz(quiz.id, questions.length, correct);
+      recordedRef.current = true;
+    }
+  }, [isFinished, selectedAnswers, questions, quiz.id, recordQuiz]);
 
   const question = questions[currentIndex];
   const isAnswered = selectedAnswers[currentIndex] !== undefined;
@@ -41,10 +54,15 @@ export default function QuizPlayer() {
 
   if (isFinished) {
     const score = Object.values(selectedAnswers).filter((ans, i) => ans === questions[i].correctIndex).length;
-    
+
     return (
       <div className="max-w-3xl mx-auto py-8 space-y-6">
         <h1 className="text-3xl font-bold text-center">Quiz Complete!</h1>
+        <div className="flex justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-4 py-1.5 text-sm font-semibold">
+            <Sparkles className="w-4 h-4" /> +25 credits earned
+          </span>
+        </div>
         <Card className="border-primary/20">
           <CardContent className="p-8 text-center space-y-6">
             <div className="text-6xl font-bold text-primary mb-2">{score}/{questions.length}</div>

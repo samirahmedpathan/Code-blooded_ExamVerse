@@ -9,6 +9,7 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 
 import { AuthProvider } from "@/lib/auth";
+import { ProgressProvider } from "@/lib/progress";
 import { AppLayout } from "@/components/layout/app-layout";
 
 import Dashboard from "@/pages/app/dashboard";
@@ -22,10 +23,10 @@ import Challenges from "@/pages/app/challenges";
 import Resources from "@/pages/app/resources";
 import Mentor from "@/pages/app/mentor";
 import Settings from "@/pages/app/settings";
+import CurrentAffairs from "@/pages/app/current-affairs";
 
 const queryClient = new QueryClient();
 
-// A wrapper for app routes to enforce layout
 function AppRoute({ component: Component }: { component: any }) {
   return (
     <AppLayout>
@@ -38,12 +39,10 @@ function Router() {
   return (
     <AnimatePresence mode="wait">
       <Switch>
-        {/* Public Routes */}
         <Route path="/" component={Home} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
 
-        {/* Authenticated App Routes */}
         <Route path="/app">
           <AppRoute component={Dashboard} />
         </Route>
@@ -68,6 +67,9 @@ function Router() {
         <Route path="/app/challenges">
           <AppRoute component={Challenges} />
         </Route>
+        <Route path="/app/current-affairs">
+          <AppRoute component={CurrentAffairs} />
+        </Route>
         <Route path="/app/resources">
           <AppRoute component={Resources} />
         </Route>
@@ -90,8 +92,10 @@ function App() {
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <AuthProvider>
-            <Router />
-            <Toaster />
+            <ProgressProvider>
+              <Router />
+              <Toaster />
+            </ProgressProvider>
           </AuthProvider>
         </WouterRouter>
       </TooltipProvider>

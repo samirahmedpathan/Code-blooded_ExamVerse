@@ -5,6 +5,7 @@ import { Send, Bot, User, Mic, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MOCK_DATA } from "@/lib/mockData";
 import { useAuth } from "@/lib/auth";
+import { findExam, findLanguage } from "@/lib/exams";
 
 interface Message {
   id: string;
@@ -44,10 +45,13 @@ function chooseFallback(text: string): string {
 
 export default function Mentor() {
   const { user } = useAuth();
+  const exam = findExam(user?.targetExam);
+  const lang = findLanguage(user?.language);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const seededRef = useRef(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -57,19 +61,31 @@ export default function Mentor() {
         setMessages(JSON.parse(saved));
         return;
       } catch {
-        /* fall through to default greeting */
+        /* fall through */
       }
     }
     setMessages([
       {
         id: "init",
         role: "assistant",
-        content: `Hi${
-          user?.name ? `, ${user.name}` : " there"
-        }. I'm your Examverse Mentor — here to explain tough concepts, plan your next study block, quiz you on PYQs, or give you a real pep talk. What's on your mind?`,
+        content: `${lang.greeting}${
+          user?.name ? `, ${user.name}` : ""
+        }. I'm your Examverse Mentor — here to explain tough concepts, plan your next study block for ${exam.name}, quiz you on PYQs, or give you a real pep talk. What's on your mind?`,
       },
     ]);
-  }, [user?.name]);
+  }, [user?.name, exam.name, lang.greeting]);
+
+  // Pick up a seed prompt forwarded from the dashboard
+  useEffect(() => {
+    if (seededRef.current) return;
+    const seed = sessionStorage.getItem("examverse:mentor_seed");
+    if (seed && messages.length > 0) {
+      seededRef.current = true;
+      sessionStorage.removeItem("examverse:mentor_seed");
+      setTimeout(() => handleSend(seed), 250);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -87,8 +103,9 @@ export default function Mentor() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         messages: history.map((m) => ({ role: m.role, content: m.content })),
-        examTarget: user?.targetExam ?? "JEE Main",
+        examTarget: exam.name,
         studentName: user?.name ?? "Student",
+        language: lang.label,
       }),
     });
     if (!res.ok) {
@@ -158,17 +175,17 @@ export default function Mentor() {
       {
         id: "init",
         role: "assistant",
-        content: `Hi${
-          user?.name ? `, ${user.name}` : " there"
-        }. Fresh start. What would you like to work on?`,
+        content: `${lang.greeting}${
+          user?.name ? `, ${user.name}` : ""
+        }. Fresh start. What would you like to work on for ${exam.short}?`,
       },
     ]);
   };
 
   const quickPrompts = [
-    "Explain Newton's Third Law in simple terms",
-    "Plan my next 3 hours of study",
-    "Quiz me on Indian Polity (5 questions)",
+    `Plan my next 3 hours for ${exam.short}`,
+    `Explain ${exam.subjects[0]} basics in simple terms`,
+    `Quiz me on ${exam.subjects[0]} (5 questions)`,
     "Give me a real pep talk",
   ];
 
@@ -188,7 +205,7 @@ export default function Mentor() {
           </h2>
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 block" />
-            Tuned for {user?.targetExam ?? "your exam"}
+            Tuned for {exam.short} · {lang.native}
           </p>
         </div>
         <Button
