@@ -25,6 +25,8 @@ import Resources from "@/pages/app/resources";
 import Mentor from "@/pages/app/mentor";
 import Settings from "@/pages/app/settings";
 import CurrentAffairs from "@/pages/app/current-affairs";
+import Schemes from "@/pages/app/schemes";
+import Careers from "@/pages/app/careers";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +72,12 @@ function Router() {
         </Route>
         <Route path="/app/current-affairs">
           <AppRoute component={CurrentAffairs} />
+        </Route>
+        <Route path="/app/schemes">
+          <AppRoute component={Schemes} />
+        </Route>
+        <Route path="/app/careers">
+          <AppRoute component={Careers} />
         </Route>
         <Route path="/app/resources">
           <AppRoute component={Resources} />

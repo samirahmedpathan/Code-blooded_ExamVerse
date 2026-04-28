@@ -16,9 +16,13 @@ import {
   Newspaper,
   Flame,
   CheckCircle2,
+  Briefcase,
+  Landmark,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
+import { findCareerPath } from "@/lib/careers";
+import { relevantSchemes, currentSchemeYear } from "@/lib/schemes";
 
 interface DashboardTask {
   id: string;
@@ -112,6 +116,11 @@ export default function Dashboard() {
   const todayCa = MOCK_DATA.currentAffairs.find((c) =>
     c.relevance.includes(exam.code),
   ) ?? MOCK_DATA.currentAffairs[0];
+
+  const career = findCareerPath(exam.code);
+  const topJobs = career.jobs.slice(0, 3);
+  const topSchemes = relevantSchemes(exam.code).slice(0, 2);
+  const schemeYear = currentSchemeYear();
 
   const submitMentor = (e: React.FormEvent) => {
     e.preventDefault();
@@ -328,6 +337,57 @@ export default function Dashboard() {
               </div>
               <Link href="/app/challenges">
                 <Button variant="outline" className="w-full">Start Challenge</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-violet-500" />
+                {tr("nav.careers")} · {exam.short}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <p className="text-xs text-muted-foreground mb-2">{career.tagline}</p>
+              {topJobs.map((job) => (
+                <div
+                  key={job.title}
+                  className="text-sm p-2 rounded-md bg-muted/30 border border-border/50"
+                >
+                  <p className="font-medium text-xs">{job.title}</p>
+                  <p className="text-[10px] text-muted-foreground">{job.category}{job.payBand ? ` · ${job.payBand}` : ""}</p>
+                </div>
+              ))}
+              <Link href="/app/careers">
+                <Button variant="outline" className="w-full mt-2 text-xs">
+                  See all {career.jobs.length} careers <ArrowRight className="w-3 h-3 ml-1" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Landmark className="w-5 h-5 text-emerald-500" />
+                {tr("nav.schemes")} {schemeYear}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {topSchemes.map((s) => (
+                <div
+                  key={s.id}
+                  className="text-sm p-2 rounded-md bg-muted/30 border border-border/50"
+                >
+                  <p className="font-medium text-xs">{s.name}</p>
+                  <p className="text-[10px] text-muted-foreground line-clamp-2">{s.yearlyUpdate}</p>
+                </div>
+              ))}
+              <Link href="/app/schemes">
+                <Button variant="outline" className="w-full mt-2 text-xs">
+                  See all schemes <ArrowRight className="w-3 h-3 ml-1" />
+                </Button>
               </Link>
             </CardContent>
           </Card>

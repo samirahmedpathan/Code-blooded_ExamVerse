@@ -17,6 +17,8 @@ import {
   Newspaper,
   Sparkles,
   Flame,
+  Landmark,
+  Briefcase,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth";
@@ -35,6 +37,8 @@ const NAV_ITEMS = [
   { href: "/app/mood", labelKey: "nav.mood", icon: Smile },
   { href: "/app/quizzes", labelKey: "nav.quizzes", icon: BookOpen },
   { href: "/app/current-affairs", labelKey: "nav.currentAffairs", icon: Newspaper },
+  { href: "/app/schemes", labelKey: "nav.schemes", icon: Landmark },
+  { href: "/app/careers", labelKey: "nav.careers", icon: Briefcase },
   { href: "/app/analytics", labelKey: "nav.analytics", icon: BarChart2 },
   { href: "/app/challenges", labelKey: "nav.challenges", icon: Trophy },
   { href: "/app/resources", labelKey: "nav.resources", icon: Library },
