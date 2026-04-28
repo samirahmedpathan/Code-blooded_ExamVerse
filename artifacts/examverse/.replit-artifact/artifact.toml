@@ -1,27 +1,31 @@
-kind = "mobile"
+kind = "web"
 previewPath = "/"
 title = "Examverse"
 version = "1.0.0"
 id = "artifacts/examverse"
-router = "expo-domain"
+router = "path"
 
 [[integratedSkills]]
-name = "expo"
+name = "react-vite"
 version = "1.0.0"
 
 [[services]]
-ensurePreviewReachable = "/status"
-name = "expo"
+name = "web"
 paths = [ "/" ]
-localPort = 23480
+localPort = 23432
 
 [services.development]
 run = "pnpm --filter @workspace/examverse run dev"
 
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/examverse", "run", "build" ]
-run = [ "pnpm", "--filter", "@workspace/examverse", "run", "serve" ]
+publicDir = "artifacts/examverse/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
 
 [services.env]
-PORT = "23480"
+PORT = "23432"
 BASE_PATH = "/"
