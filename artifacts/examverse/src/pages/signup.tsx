@@ -41,15 +41,14 @@ export default function Signup() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, isDirty },
+    formState: { errors },
     setValue,
     watch,
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
-    mode: "onChange",
     defaultValues: {
       agreeTerms: undefined,
-    }
+    },
   });
 
   const agreeTerms = watch("agreeTerms");
@@ -162,11 +161,15 @@ export default function Signup() {
             </Label>
           </div>
 
-          <motion.div whileTap={isValid && agreeTerms ? { scale: 0.98 } : {}}>
+          {errors.agreeTerms && (
+            <p className="text-xs text-destructive">{errors.agreeTerms.message}</p>
+          )}
+
+          <motion.div whileTap={{ scale: 0.98 }}>
             <Button
               type="submit"
               className="w-full rounded-lg h-11 font-medium mt-4"
-              disabled={!isValid || !agreeTerms || isLoading}
+              disabled={isLoading}
             >
               {isLoading ? <Loader2 className="animate-spin w-5 h-5 mr-2" /> : null}
               Sign Up
