@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { useAuth } from "@/lib/auth";
+import { useT } from "@/lib/i18n";
 import { EXAMS, LANGUAGES } from "@/lib/exams";
 
 const signupSchema = z
@@ -42,6 +43,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function Signup() {
   const { signup } = useAuth();
+  const { t } = useT();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -135,9 +137,9 @@ export default function Signup() {
 
           <div className="bg-card border border-border rounded-3xl shadow-xl overflow-hidden">
             <div className="px-7 pt-7 pb-4">
-              <h2 className="text-2xl font-bold tracking-tight">Create your account</h2>
+              <h2 className="text-2xl font-bold tracking-tight">{t("signup.title")}</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Tell us your goal — we'll plan the path.
+                {t("signup.sub")}
               </p>
             </div>
 
@@ -302,7 +304,7 @@ export default function Signup() {
                   disabled={isLoading}
                 >
                   {isLoading && <Loader2 className="animate-spin w-4 h-4" />}
-                  Create account
+                  {t("common.signUp")}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </motion.div>

@@ -15,6 +15,7 @@ import { MOCK_DATA } from "@/lib/mockData";
 import { useAuth } from "@/lib/auth";
 import { useProgress } from "@/lib/progress";
 import { findExam } from "@/lib/exams";
+import { useT } from "@/lib/i18n";
 
 const CATEGORY_COLORS: Record<string, string> = {
   National: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
@@ -29,6 +30,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default function CurrentAffairs() {
   const { user } = useAuth();
   const { state, markCurrentAffairsRead } = useProgress();
+  const { t } = useT();
   const [search, setSearch] = useState("");
   const [showRelevantOnly, setShowRelevantOnly] = useState(true);
   const [category, setCategory] = useState<string>("All");
@@ -63,10 +65,10 @@ export default function CurrentAffairs() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Newspaper className="w-7 h-7 text-primary" />
-            Current Affairs
+            {t("currentAffairs.title")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Daily digest tailored to {exam.short}. Mark articles read to earn +5 credits each.
+            {t("currentAffairs.sub")} · {exam.short}
           </p>
         </div>
         <div className="flex items-center gap-2 bg-muted p-1 rounded-full text-sm">
@@ -184,7 +186,7 @@ export default function CurrentAffairs() {
                     className="gap-1"
                   >
                     {read ? <CheckCircle2 className="w-4 h-4" /> : null}
-                    {read ? "Read" : "Mark as read"}
+                    {read ? t("common.read") : t("common.markRead")}
                   </Button>
                 </div>
               </CardContent>

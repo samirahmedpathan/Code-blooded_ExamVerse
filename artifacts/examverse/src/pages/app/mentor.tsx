@@ -5,6 +5,7 @@ import { Send, Bot, User, Mic, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MOCK_DATA } from "@/lib/mockData";
 import { useAuth } from "@/lib/auth";
+import { useT } from "@/lib/i18n";
 import { findExam, findLanguage } from "@/lib/exams";
 
 interface Message {
@@ -45,6 +46,7 @@ function chooseFallback(text: string): string {
 
 export default function Mentor() {
   const { user } = useAuth();
+  const { t } = useT();
   const exam = findExam(user?.targetExam);
   const lang = findLanguage(user?.language);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -197,7 +199,7 @@ export default function Mentor() {
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="font-semibold leading-tight flex items-center gap-2">
-            AI Mentor
+            {t("mentor.title")}
             <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-medium text-primary/80 bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
               <Sparkles className="w-3 h-3" />
               Live
@@ -301,7 +303,7 @@ export default function Mentor() {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask your mentor anything..."
+              placeholder={t("mentor.placeholder")}
               disabled={isTyping}
               className="pr-10 rounded-full h-12 bg-muted/30"
             />
