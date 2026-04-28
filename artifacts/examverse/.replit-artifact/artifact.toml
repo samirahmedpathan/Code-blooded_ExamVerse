@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/"
+title = "Examverse"
+version = "1.0.0"
+id = "artifacts/examverse"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/" ]
+localPort = 23480
+
+[services.development]
+run = "pnpm --filter @workspace/examverse run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/examverse", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/examverse", "run", "serve" ]
+
+[services.env]
+PORT = "23480"
+BASE_PATH = "/"

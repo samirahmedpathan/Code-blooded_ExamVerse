@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ola-T17MP9Q_YBLp2C1es"
+uri = "file://artifacts/examverse/assets/images/icon.png"
+type = "image"
+title = "examverse app icon"
